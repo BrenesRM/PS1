@@ -1,4 +1,4 @@
-﻿# Import active directory module for running AD cmdlets
+# Import active directory module for running AD cmdlets
 Import-Module ActiveDirectory
   
 # Store the data from .csv in the $File variable
@@ -14,13 +14,16 @@ foreach ($line in $File) {
         
         try
            {
-           Set-ADGroup -Identity ($line.Name) -ManagedBy ($line.Managedby) -Passthru #Check if the user exist.
+           #Check if the user exist.
+           Set-ADGroup -Identity ($line.Name) -ManagedBy ($line.Managedby) -Passthru 
            }
         catch
            {
            write-host "User is not in AD, is not posible update atributo Manageby, ($line.Managedby)"
-           Add-Content E:\Scripts\Error.txt ("Updating attribute ManagedBy is failed, in the group name:",$line.Name,$line.Managedby,$_)
+           $Errortry = ($line.Name + "," + $line.Managedby + "," + $_ + ",Fecha: " + (Get-Date))
+           Add-Content E:\Scripts\Error.txt -value ($Errortry)
            }
+        #Set-ADGroup -Identity ($line.Name) -Replace @{extensionAttribute10=($line.'Co-Dueño')} -Passthru # Attribute in AD.
         #Set-ADGroup -Identity ($line.Name) -Replace @{edsvaSecondaryOwners=($line.'Co-Dueño')} -Passthru # edsvaSecondaryOwners this attibute is only for ActiveRoles Server.
         Set-ADGroup -Identity ($line.Name) -Replace @{info=($line.Info)} -Passthru
         Start-Sleep -s 1
@@ -29,7 +32,8 @@ foreach ($line in $File) {
         {
         # Catch any error
         Write-Host "Group updated failed, ($line.Name)"
-        Add-Content E:\Scripts\Error.txt ("Update group in AD is failed, in the group name:",$line.Name,$_)
+        $Errortry = ($line.Name + "," + $_ + ",Fecha: " + (Get-Date))
+        Add-Content E:\Scripts\Error.txt -value ($Errortry)
         #New-ADGroup -Name ($line.Name) -SamAccountName ($line.Name) -GroupCategory Security -GroupScope Global -DisplayName ($line.Name) -Path "OU=Usuarios por Eliminar,DC=pruebas,DC=local" -Description ($line.Description)
         }
 }
