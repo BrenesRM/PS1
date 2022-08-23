@@ -1,3 +1,6 @@
+#Allways do the process Verified Validated, if remediation is needed, then run this PS1.
+#VerifiedValidatedGruposUpdate.ps1
+
 # Import active directory module for running AD cmdlets
 Import-Module ActiveDirectory
   
